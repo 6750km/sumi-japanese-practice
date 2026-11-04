@@ -43,3 +43,5 @@
 @media(pointer:coarse) and (max-width:550px){.library .kanji-grid{grid-template-columns:repeat(5,minmax(0,1fr))}}
 @media(pointer:coarse) and (max-width:360px){.library .kanji-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media(pointer:coarse),(max-height:500px) and (max-width:1000px){.header nav{height:auto}.header .nav-button{min-height:44px}}
+
+footer .rights-link{display:inline-block;min-height:44px;line-height:1.6;padding:8px 0;margin-top:4px}

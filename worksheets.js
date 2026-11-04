@@ -34,9 +34,18 @@ window.SumiWorksheets = (() => {
     return shortText(selection + (readings.length > 4 ? '…' : ''), 54);
   }
 
+  function pairedReadings(character,type) {
+    const kana=String(character[type]||'').split('・').filter(Boolean);
+    const latin=String(character[type+'Romaji']||'').split('・');
+    const selected=kana.slice(0,3).map((reading,index)=>latin[index]?`${reading} (${latin[index]})`:reading).join('・');
+    return shortText(selected+(kana.length>3?'…':''),64);
+  }
   function describe(character) {
-    if (character.romaji) return `Звучание: ${shortText(character.romaji, 54)}`;
-    return [character.on ? `Он: ${shortReadings(character.on)}` : '', character.kun ? `Кун: ${shortReadings(character.kun)}` : ''].filter(Boolean).join(' · ');
+    if (character.script==='hiragana'||character.script==='katakana') {
+      const reading=character.char==='っ'||character.char==='ッ'?'small tsu':character.char==='ー'?'long vowel':character.char==='を'||character.char==='ヲ'?'o (wo)':character.romaji;
+      return `Чтение: ${shortText(reading,54)}`;
+    }
+    return [character.on ? `Он: ${pairedReadings(character,'on')}` : '', character.kun ? `Кун: ${pairedReadings(character,'kun')}` : ''].filter(Boolean).join(' · ');
   }
 
   function pageWord(count) {

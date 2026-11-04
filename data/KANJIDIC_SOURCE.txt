@@ -41,3 +41,13 @@ ja_on/ja_kun and English meanings, review Russian glosses for changed entries,
 revalidate glyph availability/counts against the pinned KanjiVG snapshot, and
 rebuild kanji.js plus the standalone application. Update the snapshot metadata
 and this notice on each refresh. No automatic network calls are made at runtime.
+
+Romaji added 2026-11-04: all 3572 ja_on/ja_kun readings transliterated
+with WanaKana 5.3.1 (WaniKani Community Github, MIT). Dictionary dots marking
+okurigana and affix hyphens are removed only for the pronunciation aid;
+original Japanese readings are unchanged. ASCII Hepburn-style spelling
+retains long vowels as kana-based sequences (ou, uu, oo etc.) and uses
+an apostrophe after syllabic n where needed. onRomaji/kunRomaji retain
+the same order and separator as on/kun. Generated reading metadata remains
+CC BY-SA 4.0. The converter is development-only, not shipped at runtime.
+https://github.com/WaniKani/WanaKana

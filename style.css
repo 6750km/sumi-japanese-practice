@@ -45,3 +45,12 @@
 @media(pointer:coarse),(max-height:500px) and (max-width:1000px){.header nav{height:auto}.header .nav-button{min-height:44px}}
 
 footer .rights-link{display:inline-block;min-height:44px;line-height:1.6;padding:8px 0;margin-top:4px}
+
+/* Romaji belongs next to each sign, without hiding full dictionary readings. */
+.kanji-button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:66px;padding:7px 3px;aspect-ratio:auto}
+.tile-char{font:26px/1.15 serif}.tile-romaji{display:block;font:11px/1.25 Arial,sans-serif;max-width:100%;overflow-wrap:anywhere;color:#4f6543}
+.reading-summary{font-size:18px;font-weight:600;line-height:1.5;color:#49673a;margin:0 0 12px;overflow-wrap:anywhere}
+.reading-pair{display:flex;flex-direction:column;gap:1px;margin:0 0 10px}.reading-pair:last-child{margin-bottom:0}.reading-latin{font:12px/1.5 Arial,sans-serif;color:#49673a;overflow-wrap:anywhere}
+.reading-help{font-size:10px;line-height:1.6;margin:14px 0 0;text-align:left;color:#626e5b}
+.choice-reading{display:block;font:600 12px/1.4 Arial,sans-serif;margin:0 0 6px;color:#49673a;overflow-wrap:anywhere}
+@media(max-width:550px){.kanji-button{min-height:68px}.tile-char{font-size:29px}.tile-romaji{font-size:12px}.reading-summary{font-size:20px}.reading-latin{font-size:14px}.reading-help{font-size:12px}.choice-reading{font-size:12px}}

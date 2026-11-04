@@ -1,0 +1,43 @@
+KANJIDIC2 — dictionary metadata and kanji frequency rankings
+Copyright James William Breen and the Electronic Dictionary Research and Development Group (EDRDG).
+
+Official source: https://www.edrdg.org/kanjidic/kanjidic2.xml.gz
+Project documentation: https://www.edrdg.org/wiki/KANJIDIC_Project.html
+Dictionary licence and attribution requirements: https://www.edrdg.org/edrdg/licence.html
+Licence: Creative Commons Attribution-ShareAlike 4.0 International
+https://creativecommons.org/licenses/by-sa/4.0/
+https://creativecommons.org/licenses/by-sa/4.0/legalcode
+
+Snapshot fetched 2026-11-04
+File version: 4
+Database version: 2026-308
+Date of creation in XML header: 2026-11-04
+Original gzip SHA-256: e26e34c9187a786bf1f0b21f87e311a9b0ed644aefe9693d10bdc7cb8643d8e0
+
+Selected fields: literal, misc/freq, misc/grade, reading_meaning/rmgroup/reading
+with r_type=ja_on or ja_kun, and English meaning elements.
+No SKIP codes, query codes, dictionary indexing data, or name readings are included.
+
+Selection: exactly the 1000 entries whose misc/freq ranks are 1 through 1000,
+ordered by that rank. These ranks derive from four years of Mainichi Shimbun
+word-frequency data, analysed by Alexandre Girardi. This is a newspaper-based
+frequency ranking, not a claim about every register of Japanese or a live 2026
+usage survey. The snapshot date is the dictionary build date, not the corpus date.
+
+Adaptation: source Japanese readings preserved exactly, with multiple readings
+joined by the separator ・. English meanings retained in original order and
+joined with semicolons. Short Russian learning glosses translated from the
+English entries for this application; they are summaries of main senses,
+not exhaustive dictionary definitions. English originals remain available
+for comparison. Russian glosses have not received external editorial review.
+
+Derived dictionary metadata and Russian glosses: CC BY-SA 4.0.
+The source dictionary remains copyright its original authors.
+The application code is a separate work; this notice does not relicense code.
+
+Update procedure: on a dictionary-data refresh, obtain the latest official
+kanjidic2.xml.gz, record its header and SHA-256, select ranks 1–1000, preserve
+ja_on/ja_kun and English meanings, review Russian glosses for changed entries,
+revalidate glyph availability/counts against the pinned KanjiVG snapshot, and
+rebuild kanji.js plus the standalone application. Update the snapshot metadata
+and this notice on each refresh. No automatic network calls are made at runtime.

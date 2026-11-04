@@ -1,0 +1,12 @@
+Kana stroke data: KanjiVG, copyright Ulrich Apel, CC BY-SA 3.0.
+Pinned source: https://github.com/KanjiVG/kanjivg/tree/70a0b7ae0c18ceb5cb358274b029cce0234a43bc
+License: https://creativecommons.org/licenses/by-sa/3.0/
+Full license: COPYING in this directory.
+Adaptation: ordered SVG stroke paths extracted into kana.js, with romanization and Russian teaching notes added. Dataset and derived worksheets are CC BY-SA 3.0.
+Hiragana: 81 entries (46 basic, 20 dakuten, 5 handakuten, 9 small, 1 vu).
+Katakana: 82 entries (same 81 categories, plus long-vowel mark).
+Excluded: obsolete wi/we; repetition marks; rare voiced wa/wi/we/wo; small wa/ka/ke; interpunct. These are not part of the standard 46-character basic tables.
+Combined syllables (kya, shu etc.) use multiple letters and are not individual character entries.
+Romanization: common Hepburn (shi, chi, tsu, fu, ji); wo retained for を/ヲ although the particle is pronounced o. Di/du aliases for ぢ/ヂ and づ/ヅ explained in audioNote.
+Speech: Japanese text for Web Speech API ja-JP; small vowels/ya/yu/yo use corresponding full-size kana for isolated sound. Small tsu and long-vowel mark have empty speech because they have no standalone pronunciation. UI must explain this rather than invent an isolated sound.
+No recordings or external synthesis service included; audible output depends on the device's Japanese speech voice.

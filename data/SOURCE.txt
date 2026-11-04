@@ -1,0 +1,31 @@
+Суми — источники данных кандзи / Kanji data provenance
+
+1. Stroke geometry: KanjiVG, copyright Ulrich Apel.
+Licence: Creative Commons Attribution-ShareAlike 3.0.
+https://creativecommons.org/licenses/by-sa/3.0/
+Full licence is bundled as COPYING.
+Pinned repository: https://github.com/KanjiVG/kanjivg/tree/70a0b7ae0c18ceb5cb358274b029cce0234a43bc
+Archive: https://codeload.github.com/KanjiVG/kanjivg/tar.gz/70a0b7ae0c18ceb5cb358274b029cce0234a43bc
+Archive SHA-256: 6131533e905365c1c0b0aa763eb24c53483e12874e15b654c94f07b7bfd36365
+Adaptation: ordered SVG path d attributes extracted into kanji.js.
+No stroke geometry or path order has been edited.
+All 1000 selected kanji have paths; each path count matches KANJIDIC2 stroke_count.
+Total: 9695 strokes.
+
+2. Readings, English meanings, school grades, frequency ranks: KANJIDIC2.
+Copyright James William Breen and EDRDG. CC BY-SA 4.0.
+Official source: https://www.edrdg.org/kanjidic/kanjidic2.xml.gz
+Documentation: https://www.edrdg.org/wiki/KANJIDIC_Project.html
+Licence: https://www.edrdg.org/edrdg/licence.html
+Snapshot 2026-11-04; database version 2026-308; file version 4.
+Original gzip SHA-256: e26e34c9187a786bf1f0b21f87e311a9b0ed644aefe9693d10bdc7cb8643d8e0
+Full source/licence/adaptation and refresh details: KANJIDIC_SOURCE.txt.
+
+Exactly 1000 entries, frequency ranks 1–1000. The rank is based on a
+newspaper corpus (Mainichi Shimbun), not all contemporary Japanese usage.
+Russian short glosses are learning translations, with English originals retained.
+
+The combined adapted dataset and worksheets incorporating dictionary metadata
+are distributed under CC BY-SA 4.0. This uses the later-version ShareAlike
+option for the KanjiVG contribution; original KanjiVG remains under CC BY-SA 3.0.
+Sources and original authors must remain credited when these data are reused.

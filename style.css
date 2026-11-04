@@ -8,3 +8,38 @@
 #voiceChoice{width:100%;font-size:11px;padding:9px 6px}.audio-card #voiceStatus{min-height:3em}
 /* Comfortable touch targets and no input zoom on iPhone. */
 @media(max-width:550px){.kanji-grid{grid-template-columns:repeat(5,minmax(0,1fr))}.collection-controls{grid-template-columns:auto minmax(0,1fr);gap:8px}.search,select,.collection-controls select,.audio-card select,#voiceChoice{font-size:16px;min-height:44px}.primary,.script-button,.listen-button,.pagination button,.text-button{min-height:44px}button{touch-action:manipulation}.audio-card label{font-size:11px}.sheet-toolbar .text-button{font-size:12px}}
+/* Mobile release gate: full-width sound controls, readable labels and 44px targets. */
+@media(max-width:550px){
+ .details{display:flex;flex-direction:column;gap:14px}
+ .details .character-card{width:100%;padding:22px}
+ .character-card dl{display:flex;flex-direction:row;gap:20px;text-align:center}
+ .character-card dl>div+div{margin-top:0}
+ .audio-card{padding-top:18px;gap:9px 12px}
+ .audio-card label{font-size:12px}
+ .audio-card #speechRate{flex:1}
+ .audio-card #audioNote,.audio-card #voiceStatus{font-size:12px;line-height:1.6}
+ .details .tip-card{width:100%;padding:20px}
+ .details .tip-card p{font-size:12px}
+ .details .tip-card h3{font-size:14px}
+ .details .toggle-row{font-size:12px;min-height:44px;margin-top:9px}
+ .details .sheet-link{min-height:58px;font-size:13px;padding:12px}
+ .details .sheet-link small{font-size:11px}
+ .pagination button,.selected-chips button{min-width:44px;min-height:44px}
+ .character-card .section-label{font-size:10px}
+ .character-card h2{font-size:20px}
+ .character-card dt{font-size:10px}
+ .character-card dd{font-size:16px}
+ .library .section-label,.practice-top .section-label{font-size:10px}
+ .practice-actions .text-button{font-size:12px}
+}
+@media(max-width:360px){.kanji-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.sheet-bottom{flex-direction:column;align-items:stretch}.sheet-bottom .primary{width:100%}}
+@media(pointer:coarse),(max-height:500px) and (max-width:1000px){
+ .kanji-button,.pagination button,.selected-chips button{min-width:44px;min-height:44px}
+ .primary,.script-button,.listen-button,.text-button{min-height:44px}
+ .search,select{min-height:44px;font-size:16px}
+ .library .kanji-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .header{height:auto;min-height:83px;flex-wrap:wrap;padding-top:12px;padding-bottom:12px}
+}
+@media(pointer:coarse) and (max-width:550px){.library .kanji-grid{grid-template-columns:repeat(5,minmax(0,1fr))}}
+@media(pointer:coarse) and (max-width:360px){.library .kanji-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(pointer:coarse),(max-height:500px) and (max-width:1000px){.header nav{height:auto}.header .nav-button{min-height:44px}}

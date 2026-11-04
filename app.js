@@ -42,7 +42,7 @@ function libraryEntries(){const progress=$('progressFilter').value;return data.m
 function paginate(entries,page,size){const pages=Math.max(1,Math.ceil(entries.length/size));const safe=Math.max(0,Math.min(page,pages-1));return{items:entries.slice(safe*size,(safe+1)*size),page:safe,pages};}
 function renderLibrary(){
  const entries=libraryEntries(),view=paginate(entries,libraryPage,LIBRARY_SIZE);libraryPage=view.page;
- $('kanjiGrid').replaceChildren(...view.items.map(({k,i})=>{const b=document.createElement('button');b.className='kanji-button'+(i===current?' selected':'')+(learned.has(k.char)?' done':'');b.textContent=k.char;b.lang='ja';b.title=`${k.char} — ${k.meaning}`;b.setAttribute('aria-label',`${k.char} — ${k.meaning}${learned.has(k.char)?', изучено':''}`);b.setAttribute('aria-pressed',String(i===current));b.onclick=()=>selectKanji(i);return b;}));
+ $('kanjiGrid').replaceChildren(...view.items.map(({k,i})=>{const b=document.createElement('button');b.className='kanji-button'+(i===current?' selected':'')+(learned.has(k.char)?' done':'');b.textContent=k.char;b.lang='ja';b.title=`${k.char} — ${k.meaning}`;b.setAttribute('aria-label',`${k.char} — ${k.meaning}${learned.has(k.char)?', изучено':''}`);b.setAttribute('aria-pressed',String(i===current));b.onclick=()=>{selectKanji(i);if(matchMedia('(max-width:820px)').matches)$('board').scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});};return b;}));
  $('libraryResult').textContent=entries.length?`Найдено: ${entries.length}`:'Ничего не найдено. Попробуй другой запрос.';
  $('libraryPage').textContent=`${view.page+1} / ${view.pages}`;$('libraryPrev').disabled=view.page===0;$('libraryNext').disabled=view.page===view.pages-1;
 }

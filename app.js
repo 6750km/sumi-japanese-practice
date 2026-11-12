@@ -9,8 +9,7 @@ try{const saved=JSON.parse(localStorage.getItem('sumi-progress-v1')||'[]');if(Ar
 let current=0,stroke=0,group='all',points=[],pointer=null,animation=null;
 let libraryPage=0,sheetPage=0,sheetsOpen=false,quiz=null,quizAnswered=false,quizHeard=false;
 const LIBRARY_SIZE=24,SHEET_SIZE=40;
-const selections=Object.fromEntries(Object.entries(datasets).map(([key,items])=>[key,new Set(items.slice(0,1).map(k=>k.char))]));
-const searchCache=new WeakMap();
+const selections=Object.fromEntries(Object.entries(datasets).map(([key])=>[key,new Set()]));
 const distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
 const length=ps=>ps.slice(1).reduce((s,p,i)=>s+distance(p,ps[i]),0);
 function svgElement(tag,attrs){const el=document.createElementNS(NS,tag);for(const [key,value] of Object.entries(attrs))el.setAttribute(key,value);return el;}
@@ -35,15 +34,13 @@ function compareStroke(input,expected){
 }
 function feedback(text,type=''){ $('feedback').textContent=text;$('feedback').className='feedback '+type; }
 function updateProgress(){const n=data.filter(k=>learned.has(k.char)).length;$('dailyProgress').textContent=`${n} из ${data.length} изучено`;$('collectionCount').textContent=data.length;}
-function normalized(value){return String(value||'').normalize('NFKC').toLocaleLowerCase().replace(/[.・]/g,'');}
-function searchText(k){if(!searchCache.has(k))searchCache.set(k,normalized([k.char,k.meaning,k.meaningEn,k.on,k.kun,k.onRomaji,k.kunRomaji,k.romaji,SumiReadings.primary(k),k.frequency].join(' ')));return searchCache.get(k);}
-function matchesSearch(k,query){return query.trim().split(/\s+/).filter(Boolean).every(term=>searchText(k).includes(normalized(term)));}
-function libraryEntries(){const progress=$('progressFilter').value;return data.map((k,i)=>({k,i})).filter(({k})=>(group==='all'||k.group===group)&&(progress==='all'||(progress==='done')===learned.has(k.char))&&matchesSearch(k,$('librarySearch').value));}
+function matchesSearch(k,query,mode='reading'){return SumiSearch.matches(k,query,mode);}
+function libraryEntries(){const progress=$('progressFilter').value;return data.map((k,i)=>({k,i})).filter(({k})=>(group==='all'||k.group===group)&&(progress==='all'||(progress==='done')===learned.has(k.char))&&matchesSearch(k,$('librarySearch').value,$('librarySearchMode').value));}
 function paginate(entries,page,size){const pages=Math.max(1,Math.ceil(entries.length/size));const safe=Math.max(0,Math.min(page,pages-1));return{items:entries.slice(safe*size,(safe+1)*size),page:safe,pages};}
 function renderLibrary(){
  const entries=libraryEntries(),view=paginate(entries,libraryPage,LIBRARY_SIZE);libraryPage=view.page;
- $('kanjiGrid').replaceChildren(...view.items.map(({k,i})=>{const b=document.createElement('button');b.className='kanji-button'+(i===current?' selected':'')+(learned.has(k.char)?' done':'');const glyph=document.createElement('span');glyph.className='tile-char';glyph.lang='ja';glyph.textContent=k.char;const roman=document.createElement('small');roman.className='tile-romaji';roman.lang='en';roman.textContent=SumiReadings.primary(k);b.append(glyph,roman);b.title=`${k.char} — ${SumiReadings.summary(k)} — ${k.meaning}`;b.setAttribute('aria-label',`${k.char} — ${SumiReadings.summary(k)} — ${k.meaning}${learned.has(k.char)?', изучено':''}`);b.setAttribute('aria-pressed',String(i===current));b.onclick=()=>{selectKanji(i);if(matchMedia('(max-width:820px)').matches)$('board').scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});};return b;}));
- $('libraryResult').textContent=entries.length?`Найдено: ${entries.length}`:'Ничего не найдено. Попробуй другой запрос.';
+ $('kanjiGrid').replaceChildren(...view.items.map(({k,i})=>{const b=document.createElement('button');b.className='kanji-button'+(i===current?' selected':'')+(learned.has(k.char)?' done':'');const glyph=document.createElement('span');glyph.className='tile-char';glyph.lang='ja';glyph.textContent=k.char;const roman=document.createElement('small');roman.className='tile-romaji';roman.lang='en';roman.textContent=SumiSearch.displayReading(k,$('librarySearch').value,$('librarySearchMode').value);b.append(glyph,roman);b.title=`${k.char} — ${roman.textContent} — ${k.meaning}`;b.setAttribute('aria-label',`${k.char} — ${roman.textContent} — ${k.meaning}${learned.has(k.char)?', изучено':''}`);b.setAttribute('aria-pressed',String(i===current));b.onclick=()=>{selectKanji(i);if(matchMedia('(max-width:820px)').matches)$('board').scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});};return b;}));
+ $('libraryResult').textContent=entries.length?`Найдено: ${entries.length}`:'Ничего не найдено. Введи полное чтение, проверь фильтры или выбери поиск «Значение».';
  $('libraryPage').textContent=`${view.page+1} / ${view.pages}`;$('libraryPrev').disabled=view.page===0;$('libraryNext').disabled=view.page===view.pages-1;
 }
 function cancelAnimation(){if(animation){animation.cancel();animation=null;}}
@@ -51,7 +48,7 @@ function clearPointer(){if(pointer!==null&&$('board').hasPointerCapture(pointer)
 function renderReadingPairs(target,items){target.replaceChildren(...items.map(item=>{const row=document.createElement('span');row.className='reading-pair';const kana=document.createElement('span');kana.lang='ja';kana.textContent=item.kana;const latin=document.createElement('span');latin.lang='en';latin.className='reading-latin';latin.textContent=item.romaji;row.append(kana,latin);return row;}));if(!items.length)target.textContent='—';}
 function selectKanji(i){
  if(!data[i])return;window.SumiAudio.cancel();cancelAnimation();clearPointer();current=i;stroke=0;renderLibrary();renderBoard();const k=data[current];
- $('bigChar').textContent=k.char;$('currentRomaji').textContent=SumiReadings.summary(k);$('readingHelp').hidden=script!=='kanji';$('meaning').textContent=k.meaning;$('meaningEn').textContent=k.meaningEn||'';$('meaningEn').hidden=!k.meaningEn;
+ $('bigChar').textContent=k.char;const matching=$('librarySearchMode').value==='reading'?SumiSearch.matchedReadings(k,$('librarySearch').value):[];$('currentRomaji').textContent=matching.length?matching.join(' · '):SumiReadings.summary(k);$('readingHelp').hidden=script!=='kanji';$('meaning').textContent=k.meaning;$('meaningEn').textContent=k.meaningEn||'';$('meaningEn').hidden=!k.meaningEn;
  const n=k.paths.length;$('groupTag').textContent=`${k.frequency?'Частотность №'+k.frequency:k.group} · ${n} ${n%10===1&&n%100!==11?'черта':n%10>=2&&n%10<=4&&(n%100<12||n%100>14)?'черты':'черт'}`;
  $('detailLabel').textContent=script==='kanji'?'ЗНАКОМЬСЯ С КАНДЗИ':'ЗНАКОМЬСЯ СО ЗНАКОМ';
  $('onLabel').textContent=script==='kanji'?'ОНЪЁМИ':'КАК ЧИТАЕТСЯ';$('kunLabel').textContent=script==='kanji'?'КУНЪЁМИ':'ПАРА В АЗБУКЕ';
@@ -87,22 +84,32 @@ function setTab(sheets){sheetsOpen=sheets;$('practicePanel').hidden=sheets;$('sh
 $('brandHome').onclick=event=>{event.preventDefault();switchScript('kanji');setTab(false);};
 $('practiceTab').onclick=()=>setTab(false);$('sheetsTab').onclick=()=>setTab(true);
 function switchScript(nextScript){
- if(!datasets[nextScript])return;clearPointer();cancelAnimation();SumiAudio.cancel();script=nextScript;data=datasets[script];group=script==='kanji'?'all':'Основные';libraryPage=0;sheetPage=0;
- $('librarySearch').value='';$('sheetSearch').value='';$('progressFilter').value='all';
+ if(!datasets[nextScript])return;clearPointer();cancelAnimation();SumiAudio.cancel();script=nextScript;data=datasets[script];group='all';libraryPage=0;sheetPage=0;
+ $('librarySearch').value='';$('sheetSearch').value='';$('progressFilter').value='all';$('librarySearchMode').value='reading';$('sheetSearchMode').value='reading';updateSearchHelp();
  document.querySelectorAll('.script-button').forEach(b=>{const active=b.dataset.script===script;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});
  $('scriptDescription').textContent=script==='kanji'?'1000 частотных кандзи по KANJIDIC2 · газетный корпус Mainichi Shimbun':`${scriptNames[script]} · 46 основных знаков, озвончённые и малые формы · письмо и звучание`;
- $('libraryTitle').textContent=script==='kanji'?'Выбери кандзи':'Выбери знак';$('librarySearch').placeholder=script==='kanji'?'日, nichi, день…':script==='hiragana'?'あ, shi, слог…':'ア, shi, слог…';
+ $('libraryTitle').textContent=script==='kanji'?'Выбери кандзи':'Выбери знак';
  populateGroups();updateProgress();renderSheetChoices();selectKanji(0);setTab(sheetsOpen);if(script!=='kanji')newQuiz();
 }
 for(const b of document.querySelectorAll('.script-button'))b.onclick=()=>switchScript(b.dataset.script);
+function updateSearchHelp(){
+ for(const prefix of ['library','sheet']){
+  const meaning=$(prefix+'SearchMode').value==='meaning';
+  $(prefix+'Search').placeholder=meaning?'Например: гора':script==='kanji'?'日, nichi, hi':'a, i, u';
+  $(prefix+'SearchHelp').textContent=meaning?'Значение по-русски или по-английски.':'Знак или точное чтение. Несколько — через пробел или запятую.';
+ }
+}
+$('librarySearchMode').onchange=()=>{libraryPage=0;updateSearchHelp();renderLibrary();};
+$('sheetSearchMode').onchange=()=>{sheetPage=0;updateSearchHelp();renderSheetChoices();};
 $('librarySearch').oninput=()=>{libraryPage=0;renderLibrary();};$('groupFilter').onchange=()=>{group=$('groupFilter').value;libraryPage=0;renderLibrary();};$('progressFilter').onchange=()=>{libraryPage=0;renderLibrary();};
 $('libraryPrev').onclick=()=>{libraryPage--;renderLibrary();};$('libraryNext').onclick=()=>{libraryPage++;renderLibrary();};
-function sheetEntries(){return data.filter(k=>matchesSearch(k,$('sheetSearch').value));}
+function sheetEntries(){return data.filter(k=>matchesSearch(k,$('sheetSearch').value,$('sheetSearchMode').value));}
 function pageWord(count){return count%10===1&&count%100!==11?'страница':count%10>=2&&count%10<=4&&(count%100<12||count%100>14)?'страницы':'страниц';}
 function renderSheetChoices(){
  const selected=selections[script],view=paginate(sheetEntries(),sheetPage,SHEET_SIZE);sheetPage=view.page;
- $('sheetChoices').replaceChildren(...view.items.map(k=>{const b=document.createElement('button');b.className='sheet-choice';b.setAttribute('aria-pressed',String(selected.has(k.char)));b.setAttribute('aria-label',`${k.char} — ${k.meaning}`);const c=document.createElement('span');c.lang='ja';c.textContent=k.char;const reading=document.createElement('strong');reading.className='choice-reading';reading.lang='en';reading.textContent=SumiReadings.primary(k);const text=document.createElement('small');text.textContent=k.meaning;b.append(c,reading,text);b.onclick=()=>{if(selected.has(k.char))selected.delete(k.char);else selected.add(k.char);renderSheetChoices();};return b;}));
- $('selectedSheetChips').replaceChildren(...data.filter(k=>selected.has(k.char)).map(k=>{const b=document.createElement('button');b.textContent=`${k.char} ×`;b.setAttribute('aria-label',`Убрать ${k.char} из прописей`);b.onclick=()=>{selected.delete(k.char);renderSheetChoices();};return b;}));
+ $('sheetChoices').replaceChildren(...view.items.map(k=>{const b=document.createElement('button');b.className='sheet-choice';b.setAttribute('aria-pressed',String(selected.has(k.char)));b.setAttribute('aria-label',`${k.char} — ${k.meaning}`);const c=document.createElement('span');c.lang='ja';c.textContent=k.char;const reading=document.createElement('strong');reading.className='choice-reading';reading.lang='en';reading.textContent=SumiSearch.displayReading(k,$('sheetSearch').value,$('sheetSearchMode').value);b.setAttribute('aria-label',`${k.char} — ${reading.textContent} — ${k.meaning}`);const text=document.createElement('small');text.textContent=k.meaning;b.append(c,reading,text);b.onclick=()=>{if(selected.has(k.char))selected.delete(k.char);else selected.add(k.char);renderSheetChoices();};return b;}));
+ $('selectedSheetChips').replaceChildren(...data.filter(k=>selected.has(k.char)).map(k=>{const b=document.createElement('button');b.textContent=`${k.char} (${SumiReadings.primary(k)}) ×`;b.setAttribute('aria-label',`Убрать ${k.char} из прописей`);b.onclick=()=>{selected.delete(k.char);renderSheetChoices();};return b;}));
+ $('sheetResult').textContent=sheetEntries().length?`Найдено: ${sheetEntries().length}`:'Совпадений нет. Проверь чтение или выбери поиск по значению.';
  $('sheetPage').textContent=`${view.page+1} / ${view.pages}`;$('sheetPrev').disabled=view.page===0;$('sheetNext').disabled=view.page===view.pages-1;
  $('sheetCount').textContent=`Выбрано: ${selected.size} · ${selected.size} ${pageWord(selected.size)} A4`;$('downloadSheet').disabled=selected.size===0;
 }
@@ -131,4 +138,4 @@ function newQuiz(){
 }
 $('quizPlay').onclick=()=>{if(!quiz)return;SumiAudio.speak(quiz.speech,{rate:Number($('speechRate').value),onStart:()=>{quizHeard=true;$('quizFeedback').textContent='Какой знак ты услышала?';if(!quizAnswered)for(const b of $('quizChoices').children)if(!b.classList.contains('incorrect'))b.disabled=false;},onError:message=>{$('quizFeedback').textContent=message;}});};$('quizNext').onclick=newQuiz;
 window.addEventListener('pagehide',()=>SumiAudio.cancel());
-populateGroups();updateProgress();renderSheetChoices();selectKanji(0);
+updateSearchHelp();populateGroups();updateProgress();renderSheetChoices();selectKanji(0);
